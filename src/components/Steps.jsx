@@ -1,24 +1,31 @@
 // Steps.js
 import { useState } from 'react'
 import StepsHeader from './StepsHeader'
-import Step1 from './Step1'
-import Step2 from './Step2'
-import Step3 from './Step3'
+import Step1 from './steps/ProductInfo'
+import Step2 from './steps/CustomerDetails'
+import Step3 from './steps/Payment'
 
 export default function Steps() {
+
+  // Steps Header names
   const steps = [
     'Información del producto',
     'Información del cliente',
-    'Método de pago',
+    'Método de pago ',
+    'Checkout'
   ]
 
+  // Save the current selected step
   const [step, setStep] = useState(1)
+
+  // Save the form data for each step
   const [formData, setFormData] = useState({
     productInfo: {},
     customerInfo: {},
     paymentInfo: {},
   })
 
+  
   const handleFormDataChange = (stepData) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -27,64 +34,65 @@ export default function Steps() {
   }
 
   const handleStepClick = (newStep) => {
-    // Actualiza el estado del paso al hacer clic en el encabezado
+    // Update the state of the step when the header is clicked
     setStep(newStep)
   }
 
+  const stepComponents = {
+    1: (
+      <Step1
+        onFormDataChange={handleFormDataChange}
+        formData={formData.productInfo}
+      />
+    ),
+    2: (
+      <Step2
+        onFormDataChange={handleFormDataChange}
+        formData={formData.customerInfo}
+      />
+    ),
+    3: (
+      <Step3
+        onFormDataChange={handleFormDataChange}
+        formData={formData.paymentInfo}
+      />
+    ),
+  }
+
   const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <Step1
-            onFormDataChange={handleFormDataChange}
-            formData={formData.productInfo}
-          />
-        )
-      case 2:
-        return (
-          <Step2
-            onFormDataChange={handleFormDataChange}
-            formData={formData.customerInfo}
-          />
-        )
-      case 3:
-        return (
-          <Step3
-            onFormDataChange={handleFormDataChange}
-            formData={formData.paymentInfo}
-          />
-        )
-      default:
-        return null
-    }
+    return stepComponents[step] || null
   }
 
   return (
-    <div className='max-w-lg mx-auto mt-8 p-4 bg-gray-200 rounded'>
-      <StepsHeader
-        steps={steps}
-        currentStep={step}
-        onStepClick={handleStepClick}
-      />
+    <>
+      <div className='flex flex-col items-center justify-center h-full w-3xl max-w-3xl bg-red-200'>
+        <div id='stepsHeader' className='bg-gray-200 mb-0'>
+          <StepsHeader
+            steps={steps}
+            currentStep={step}
+            onStepClick={handleStepClick}
+          />
+        </div>
+        <div className='flex justify-between mt-4'>
+          <button
+            onClick={() => setStep(step - 1)}
+            disabled={step === 1}
+            className='bg-blue-500 text-white px-4 py-2 rounded cursor-pointer'
+          >
+            Anterior
+          </button>
 
-      {renderStep()}
+          <button
+            onClick={() => setStep(step + 1)}
+            disabled={step === 3}
+            className='bg-blue-500 text-white px-4 py-2 rounded cursor-pointer'
+          >
+            Siguiente
+          </button>
+        </div>
 
-      <div className='flex justify-between mt-4'>
-        <button
-          onClick={() => setStep(step - 1)}
-          disabled={step === 1}
-          className='bg-blue-500 text-white px-4 py-2 rounded'
-        >
-          Anterior
-        </button>
-        <button
-          onClick={() => setStep(step + 1)}
-          disabled={step === 3}
-          className='bg-blue-500 text-white px-4 py-2 rounded'
-        >
-          Siguiente
-        </button>
+        {renderStep()}
       </div>
-    </div>
+    </>
   )
 }
